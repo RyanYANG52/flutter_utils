@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_utils/dart_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-void main(){
+void main() {
   test('BitConverter test', () {
     List<int> list = [0xAF, 0xC6, 0x53, 0x01, 0x55, 0x66, 0x77, 0x88];
 
@@ -19,5 +21,32 @@ void main(){
 
     var int64 = BitConverter.readInt64(list, 0);
     expect(int64, -5780841806490601592);
+  });
+
+  test('Trail test', () async {
+    int counter = 0;
+    int trailCount = 3;
+    bool isDone = false;
+    StreamController<int> input = StreamController<int>();
+    var trailStream = input.stream.transform(trail(trailCount));
+    trailStream.listen((values) {
+      if (counter > trailCount) {
+        expect(values.length, trailCount);
+        expect(values[0], counter - trailCount + 1);
+      } else {
+        expect(values.length, counter);
+        expect(values[0], 1);
+      }
+      expect(values[values.length - 1], counter);
+    }).onDone(() {
+      isDone = true;
+    });
+    for (var i = 0; i < 10; i++) {
+      counter++;
+      input.add(counter);
+      await Future(() {});
+    }
+    await input.close();
+    expect(isDone, true);
   });
 }

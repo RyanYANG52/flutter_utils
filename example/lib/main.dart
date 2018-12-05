@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_utils/dart_utils.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:logging/logging.dart';
+
+int _counter = 0;
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -13,9 +16,14 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LogOverlay(
-        padding: const EdgeInsets.only(top: 16.0),
-        logStream: Logger.root.onRecord,
+        padding: const EdgeInsets.only(bottom: 16.0),
+        alignment: Alignment.bottomCenter,
+        logStream: Logger.root.onRecord.map((log) =>
+            '${TimeFormatter.formatDateTime(log.time, true)} - ${log.message}'),
         child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Example'),
+          ),
           body: DoubleBackExit(
             backOnceCallback: () {
               Fluttertoast.showToast(
@@ -25,16 +33,14 @@ class ExampleApp extends StatelessWidget {
             exitCallback: () {
               print('App EXIT!');
             },
-            child: Container(
-              padding: const EdgeInsets.all(64.0),
-              alignment: Alignment.topCenter,
-              child: Text('Hello World'),
+            child: const Center(
+              child: Text('Hello World!'),
             ),
           ),
           floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
-              Logger.root.fine('${DateTime.now()}');
+              Logger.root.fine('${_counter++}');
             },
           ),
         ),

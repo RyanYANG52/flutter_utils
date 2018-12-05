@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_utils/flutter_utils.dart';
 
 class LogOverlay<T extends Object> extends StatelessWidget {
-  final List<String> _logBuffer = <String>[];
   final EdgeInsets padding;
   final AlignmentGeometry alignment;
   final Stream<T> logStream;
@@ -19,21 +20,22 @@ class LogOverlay<T extends Object> extends StatelessWidget {
     this.maxLineCount = 10,
     this.backgroundColor = const Color(0x8A000000),
     this.textStyle = const TextStyle(
-        color: const Color(0x8AFFFFFF),
-        fontSize: 13,
-        decoration: TextDecoration.none),
+      color: const Color(0xAAFFFFFF),
+      fontSize: 13,
+      decoration: TextDecoration.none,      
+    ),
   })  : assert(child != null),
         assert(logStream != null),
         assert(maxLineCount > 0),
         super(key: key);
 
-  String _getLogMessage() {
-    String logMessage = '';
-    for (var i = 0; i < _logBuffer.length - 1; i++) {
-      logMessage += '${_logBuffer[i]}\n';
+  String _getLogMessage(List<T> logs) {
+    StringBuffer logMessage = StringBuffer();
+    for (var i = 0; i < logs.length - 1; i++) {
+      logMessage.writeln('${logs[i]}');
     }
-    logMessage += _logBuffer[_logBuffer.length - 1];
-    return logMessage;
+    logMessage.write('${logs[logs.length - 1]}');
+    return logMessage.toString();
   }
 
   @override
@@ -42,23 +44,12 @@ class LogOverlay<T extends Object> extends StatelessWidget {
       children: <Widget>[
         child,
         IgnorePointer(
-          child: StreamBuilder(
+          child: TrailStreamBuilder(
+            trailCount: maxLineCount,
             stream: logStream,
-            initialData: null,
-            builder: (BuildContext context, AsyncSnapshot<T> snapshot) {
+            builder: (BuildContext context, AsyncSnapshot<List<T>> snapshot) {
               // new log received
               if (snapshot.hasData && snapshot.data != null) {
-                _logBuffer.add('${snapshot.data}');
-              }
-
-              if (_logBuffer.length > maxLineCount) {
-                _logBuffer.removeAt(0);
-              }
-
-              if (_logBuffer.isEmpty) {
-                // empty widget
-                return const LimitedBox();
-              } else {
                 return SafeArea(
                   child: Align(
                     alignment: alignment,
@@ -67,13 +58,14 @@ class LogOverlay<T extends Object> extends StatelessWidget {
                       padding: const EdgeInsets.all(16.0),
                       color: backgroundColor,
                       child: Text(
-                        _getLogMessage(),
+                        _getLogMessage(snapshot.data),
                         style: textStyle,
                       ),
                     ),
                   ),
                 );
               }
+              return const LimitedBox();
             },
           ),
         ),
