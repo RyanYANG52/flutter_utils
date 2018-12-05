@@ -5,15 +5,23 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:logging/logging.dart';
 
 int _counter = 0;
+var log = Logger('log');
 
 void main() {
   Logger.root.level = Level.ALL;
-  runApp(ExampleApp());
+  runApp(AppLifecycle(
+    keepAliveDurationInBackground: const Duration(seconds: 30),
+    onInit:()=> print('App Init'),
+    onClose: ()=> print('App Exit'),
+    onBecameBackground: ()=> log.info('App went into background'),
+    onBecameForeground: ()=>log.info('App is brought back to foreground'),    
+    app:ExampleApp()
+  ));
 }
 
 class ExampleApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     return MaterialApp(
       home: LogOverlay(
         padding: const EdgeInsets.only(bottom: 16.0),
@@ -40,7 +48,7 @@ class ExampleApp extends StatelessWidget {
               );
             },
             exitCallback: () {
-              print('App EXIT!');
+              print('App double back EXIT!');
             },
             child: Center(
               child: ShinyLogo(
@@ -55,7 +63,7 @@ class ExampleApp extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
-              Logger.root.fine('${_counter++}');
+              log.info('${_counter++}');
             },
           ),
         ),
