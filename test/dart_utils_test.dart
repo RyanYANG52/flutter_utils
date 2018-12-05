@@ -49,4 +49,15 @@ void main() {
     await input.close();
     expect(isDone, true);
   });
+
+  test('TimeFormatter test', () {
+    DateTime dateTime = DateTime.utc(2000, 10, 10, 3, 59, 9, 90);
+    expect(TimeFormatter.formatDateTime(dateTime), '03:59:09');
+    expect(TimeFormatter.formatDateTime(dateTime, true), '03:59:09.090');
+
+    Duration duration =
+        Duration(hours: 3, minutes: 59, seconds: 9, milliseconds: 90);
+    expect(TimeFormatter.formatDuration(duration), '03:59:09');
+    expect(TimeFormatter.formatDuration(duration, true), '03:59:09.090');
+  });
 }

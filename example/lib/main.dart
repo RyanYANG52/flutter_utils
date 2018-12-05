@@ -22,7 +22,16 @@ class ExampleApp extends StatelessWidget {
             '${TimeFormatter.formatDateTime(log.time, true)} - ${log.message}'),
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Example'),
+            title: ShinyLogo(
+              parentBackground: Theme.of(context).primaryColor,
+              opacityOffset: 0.25,
+              shineDurationPercent: 0.15,
+              bandSizePercent: 0.5,
+              repeatDuration: const Duration(milliseconds: 2000),
+              child: Icon(
+                Icons.new_releases,
+              ),
+            ),
           ),
           body: DoubleBackExit(
             backOnceCallback: () {
@@ -33,8 +42,14 @@ class ExampleApp extends StatelessWidget {
             exitCallback: () {
               print('App EXIT!');
             },
-            child: const Center(
-              child: Text('Hello World!'),
+            child: Center(
+              child: ShinyLogo(
+                parentBackground: Theme.of(context).scaffoldBackgroundColor,
+                child: Image.asset(
+                  'assets/wait_logo.png',
+                  height: 32.0,
+                ),
+              ),
             ),
           ),
           floatingActionButton: FloatingActionButton(

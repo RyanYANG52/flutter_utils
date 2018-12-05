@@ -28,7 +28,7 @@ class TimeFormatter {
   }
 
   static String formatDuration(Duration duration,
-      [bool showMillSeconds = false]) {
+      [bool showMilliSeconds = false]) {
     StringBuffer buffer = StringBuffer();
     buffer
       ..write(twoDigits(duration.inHours))
@@ -38,7 +38,7 @@ class TimeFormatter {
       ..write(
           twoDigits(duration.inSeconds.remainder(Duration.secondsPerMinute)));
 
-    if (showMillSeconds) {
+    if (showMilliSeconds) {
       buffer
         ..write('.')
         ..write(threeDigits(
@@ -48,7 +48,7 @@ class TimeFormatter {
   }
 
   static String formatDateTime(DateTime dateTime,
-      [bool showMillSeconds = false]) {
+      [bool showMilliSeconds = false]) {
     StringBuffer buffer = StringBuffer();
     buffer
       ..write(twoDigits(dateTime.hour))
@@ -57,7 +57,7 @@ class TimeFormatter {
       ..write(':')
       ..write(twoDigits(dateTime.second));
 
-    if (showMillSeconds) {
+    if (showMilliSeconds) {
       buffer..write('.')..write(threeDigits(dateTime.millisecond));
     }
     return buffer.toString();
