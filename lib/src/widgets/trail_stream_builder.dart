@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_utils/dart_utils.dart';
 
-class TrailStreamBuilder<T> extends StatelessWidget {
+class TrailStreamBuilder<T> extends StatefulWidget {
   const TrailStreamBuilder({
     Key key,
     this.initialData,
@@ -17,11 +17,32 @@ class TrailStreamBuilder<T> extends StatelessWidget {
   final int trailCount;
 
   @override
+  _TrailStreamBuilderState<T> createState() => _TrailStreamBuilderState<T>();
+}
+
+class _TrailStreamBuilderState<T> extends State<TrailStreamBuilder<T>> {
+  Stream<List<T>> _trailStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _trailStream = widget.stream.transform(trail(widget.trailCount));
+  }
+
+  @override
+  void didUpdateWidget(TrailStreamBuilder<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.stream != widget.stream) {
+      _trailStream = widget.stream.transform(trail(widget.trailCount));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      initialData: initialData != null ? <T>[initialData] : null,
-      stream: stream.transform(trail(trailCount)),
-      builder: builder,
+      initialData: widget.initialData != null ? <T>[widget.initialData] : null,
+      stream: _trailStream,
+      builder: widget.builder,
     );
   }
 }

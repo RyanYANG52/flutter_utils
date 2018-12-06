@@ -3,15 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 
 class LogOverlay<T extends Object> extends StatelessWidget {
-  final EdgeInsets padding;
-  final AlignmentGeometry alignment;
-  final Stream<T> logStream;
-  final Widget child;
-  final int maxLineCount;
-  final Color backgroundColor;
-  final TextStyle textStyle;
 
-  LogOverlay({
+  /// Creates a widget that shows a log console overlay on top of its child.
+  /// 
+  /// The [logStream] must not be null
+  /// The [child] must not be null
+  const LogOverlay({
     Key key,
     @required this.logStream,
     @required this.child,
@@ -28,6 +25,14 @@ class LogOverlay<T extends Object> extends StatelessWidget {
         assert(logStream != null),
         assert(maxLineCount > 0),
         super(key: key);
+
+  final EdgeInsets padding;
+  final AlignmentGeometry alignment;
+  final Stream<T> logStream;
+  final Widget child;
+  final int maxLineCount;
+  final Color backgroundColor;
+  final TextStyle textStyle;
 
   String _getLogMessage(List<T> logs) {
     StringBuffer logMessage = StringBuffer();
