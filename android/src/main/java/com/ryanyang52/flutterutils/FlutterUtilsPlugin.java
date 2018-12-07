@@ -9,7 +9,10 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.view.WindowManager;
+import android.view.Display;
 import android.util.DisplayMetrics;
+import android.graphics.Point;
+import android.os.Build;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,35 +36,45 @@ public class FlutterUtilsPlugin implements MethodCallHandler{
     @Override
     public void onMethodCall(MethodCall call, Result result) {
         if (call.method.equals("getDisplayMetrics")) {
-            DisplayMetrics dm = getDisplayMetrics();
-            if(dm != null){
-              Map<String, Object> metrics = new HashMap<>();
-              metrics.put("density", dm.density);
-              metrics.put("densityDpi", dm.densityDpi);
-              metrics.put("width", dm.widthPixels);
-              metrics.put("height", dm.heightPixels);
-              metrics.put("scaledDensity", dm.scaledDensity);
-              metrics.put("xdpi", dm.xdpi);
-              metrics.put("ydpi", dm.ydpi);
+            Map<String, Object> metrics = getDisplayMetrics();
+            if(metrics != null){
               result.success(metrics);
             } else {
               result.error("UNAVAILABLE", "Display Metrics Not Available", null);
             }
-        }else if(call.method.equals("getBatteryLevel")){
-            int batteryLevel = 66;
-            result.success(batteryLevel);
-        }        
+        }       
         else {
             result.notImplemented();
         }
     }
 
     // Request the DisplayMetrics
-    private DisplayMetrics getDisplayMetrics() {
+    private Map<String, Object> getDisplayMetrics() {
         Context context = registrar.context();
         WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm  = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(dm);
-        return dm;
+        Display display = windowManager.getDefaultDisplay();
+        display.getMetrics(dm);
+        
+        if(dm != null){
+            Map<String, Object> metrics = new HashMap<>();
+            metrics.put("density", dm.density);
+            metrics.put("densityDpi", dm.densityDpi);
+            if(Build.VERSION.SDK_INT < 17){
+                metrics.put("width", dm.widthPixels);
+                metrics.put("height", dm.heightPixels);
+            }else{
+                Point screenResolution = new Point();
+                display.getRealSize(screenResolution);
+                metrics.put("width", screenResolution.x);
+                metrics.put("height", screenResolution.y);
+            }
+            metrics.put("scaledDensity", dm.scaledDensity);
+            metrics.put("xdpi", dm.xdpi);
+            metrics.put("ydpi", dm.ydpi);
+            return metrics;
+        }
+
+        return null;        
     }
 }

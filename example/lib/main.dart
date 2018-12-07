@@ -14,14 +14,7 @@ void main() {
   runApp(AppLifecycle(
       keepAliveDurationInBackground: const Duration(seconds: 30),
       onInit: () {
-        Display().metrics.then((metrics) {
-          if (metrics != null) {
-            double width = (metrics.screenWidthInCm * 10).roundToDouble() / 10;
-            double height =
-                (metrics.screenHeightInCm * 10).roundToDouble() / 10;
-            log.info('width: ${width}cm  height: ${height}cm');
-          }
-        });
+        log.info('App Init');
       },
       onClose: () => print('App Exit'),
       onBecameBackground: () => log.info('App went into background'),
@@ -39,7 +32,7 @@ class ExampleApp extends StatelessWidget {
         logStream: logStream,
         child: Scaffold(
           appBar: AppBar(
-            title: ShinyLogo(
+            leading: ShinyLogo(
               parentBackground: Theme.of(context).primaryColor,
               opacityOffset: 0.25,
               shineDurationPercent: 0.15,
@@ -48,6 +41,25 @@ class ExampleApp extends StatelessWidget {
               child: Icon(
                 Icons.new_releases,
               ),
+            ),
+            centerTitle: true,
+            title: OrientationBuilder(
+              builder: (context, orientation) {
+                return FutureBuilder(
+                  future: Display().metrics,
+                  builder: (context, AsyncSnapshot<DisplayMetrics> snapshot) {
+                    String title = '';
+                    if (snapshot.hasData) {
+                      double width = NumUtil.roundAsFixed(
+                          snapshot.data.screenWidthInCm, 1);
+                      double height = NumUtil.roundAsFixed(
+                          snapshot.data.screenHeightInCm, 1);
+                      title = '${width}cm * ${height}cm';
+                    }
+                    return Text(title);
+                  },
+                );
+              },
             ),
           ),
           body: DoubleBackExit(
@@ -60,12 +72,23 @@ class ExampleApp extends StatelessWidget {
               print('App double back EXIT!');
             },
             child: Center(
-              child: ShinyLogo(
-                parentBackground: Theme.of(context).scaffoldBackgroundColor,
-                child: Image.asset(
-                  'assets/wait_logo.png',
-                  height: 32.0,
-                ),
+              child: Column(
+                children: <Widget>[
+                  ShinyLogo(
+                    parentBackground: Theme.of(context).scaffoldBackgroundColor,
+                    child: Image.asset(
+                      'assets/wait_logo.png',
+                      height: 32.0,
+                    ),
+                  ),
+                  ShinyLogo(
+                    parentBackground: Theme.of(context).scaffoldBackgroundColor,
+                    child: Image.asset(
+                      'assets/logo.png',
+                      height: 32.0,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
