@@ -9,8 +9,9 @@ class ShinyLogo extends StatefulWidget {
     this.shineDurationPercent = 0.5,
     this.opacityOffset = 0.5,
     this.bandSizePercent = 0.3,
+    this.reversed = false,
   })  : assert(child != null),
-        assert(opacityOffset > 0 && opacityOffset < 1),
+        assert(opacityOffset > 0 && opacityOffset <= 1),
         assert(shineDurationPercent > 0 && shineDurationPercent < 1),
         assert(bandSizePercent > 0 && bandSizePercent < 1),
         super(key: key);
@@ -21,6 +22,7 @@ class ShinyLogo extends StatefulWidget {
   final Duration repeatDuration;
   final double shineDurationPercent;
   final double bandSizePercent;
+  final bool reversed;
 
   @override
   _ShinyLogoState createState() => _ShinyLogoState();
@@ -34,8 +36,14 @@ class _ShinyLogoState extends State<ShinyLogo>
   Color _endColor;
 
   void _initValues() {
-    _beginColor = widget.parentBackground.withOpacity(widget.opacityOffset);
-    _endColor = widget.parentBackground.withOpacity(0.0);
+    if (widget.reversed) {
+      _beginColor = widget.parentBackground.withOpacity(widget.opacityOffset);
+      _endColor = widget.parentBackground.withOpacity(0.0);
+    } else {
+      _beginColor = widget.parentBackground.withOpacity(0.0);
+      _endColor = widget.parentBackground.withOpacity(widget.opacityOffset);
+    }
+
     double beginStop = (1.0 - widget.shineDurationPercent) / 2;
     _stopTween = CurveTween(curve: Interval(beginStop, 1.0 - beginStop));
   }
@@ -78,7 +86,8 @@ class _ShinyLogoState extends State<ShinyLogo>
         _stopTween.evaluate(_controller) * scale - widget.bandSizePercent;
     return DecoratedBox(
         decoration: BoxDecoration(
-            backgroundBlendMode: BlendMode.srcOver,
+            backgroundBlendMode:
+                widget.reversed ? BlendMode.srcOver : BlendMode.lighten,
             shape: BoxShape.rectangle,
             gradient: LinearGradient(
                 begin: Alignment.centerLeft,

@@ -54,21 +54,18 @@ public class FlutterUtilsPlugin implements MethodCallHandler{
         WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm  = new DisplayMetrics();
         Display display = windowManager.getDefaultDisplay();
-        display.getMetrics(dm);
+        if(Build.VERSION.SDK_INT < 17){
+            display.getMetrics(dm);
+        }else{
+            display.getRealMetrics(dm);
+        }
         
         if(dm != null){
             Map<String, Object> metrics = new HashMap<>();
             metrics.put("density", dm.density);
             metrics.put("densityDpi", dm.densityDpi);
-            if(Build.VERSION.SDK_INT < 17){
-                metrics.put("width", dm.widthPixels);
-                metrics.put("height", dm.heightPixels);
-            }else{
-                Point screenResolution = new Point();
-                display.getRealSize(screenResolution);
-                metrics.put("width", screenResolution.x);
-                metrics.put("height", screenResolution.y);
-            }
+            metrics.put("width", dm.widthPixels);
+            metrics.put("height", dm.heightPixels);
             metrics.put("scaledDensity", dm.scaledDensity);
             metrics.put("xdpi", dm.xdpi);
             metrics.put("ydpi", dm.ydpi);

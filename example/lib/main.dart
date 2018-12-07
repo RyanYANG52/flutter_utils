@@ -25,6 +25,7 @@ void main() {
 class ExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final Color backColor = Theme.of(context).scaffoldBackgroundColor;
     return MaterialApp(
       home: LogOverlay(
         padding: const EdgeInsets.only(bottom: 84.0),
@@ -33,6 +34,7 @@ class ExampleApp extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             leading: ShinyLogo(
+              reversed: true,
               parentBackground: Theme.of(context).primaryColor,
               opacityOffset: 0.25,
               shineDurationPercent: 0.15,
@@ -50,10 +52,10 @@ class ExampleApp extends StatelessWidget {
                   builder: (context, AsyncSnapshot<DisplayMetrics> snapshot) {
                     String title = '';
                     if (snapshot.hasData) {
-                      double width = NumUtil.roundAsFixed(
-                          snapshot.data.screenWidthInCm, 1);
-                      double height = NumUtil.roundAsFixed(
-                          snapshot.data.screenHeightInCm, 1);
+                      double width =
+                          NumUtil.roundAsFixed(snapshot.data.widthInCm, 1);
+                      double height =
+                          NumUtil.roundAsFixed(snapshot.data.heightInCm, 1);
                       title = '${width}cm * ${height}cm';
                     }
                     return Text(title);
@@ -71,24 +73,33 @@ class ExampleApp extends StatelessWidget {
             exitCallback: () {
               print('App double back EXIT!');
             },
-            child: Center(
-              child: Column(
-                children: <Widget>[
-                  ShinyLogo(
-                    parentBackground: Theme.of(context).scaffoldBackgroundColor,
-                    child: Image.asset(
-                      'assets/wait_logo.png',
-                      height: 32.0,
+            child: Container(
+              color: backColor,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ShinyLogo(
+                      reversed: true,
+                      parentBackground: backColor,
+                      child: Image.asset(
+                        'assets/wait_logo.png',
+                        height: 32.0,
+                      ),
                     ),
-                  ),
-                  ShinyLogo(
-                    parentBackground: Theme.of(context).scaffoldBackgroundColor,
-                    child: Image.asset(
-                      'assets/logo.png',
-                      height: 32.0,
+                    const SizedBox(
+                      height: 16.0,
                     ),
-                  ),
-                ],
+                    ShinyLogo(                      
+                      opacityOffset: 1.0,
+                      parentBackground: backColor,
+                      child: Image.asset(
+                        'assets/logo.png',
+                        height: 32.0,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
