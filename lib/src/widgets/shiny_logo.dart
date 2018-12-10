@@ -1,28 +1,41 @@
 import 'package:flutter/widgets.dart';
 
+enum ShineMode { lighten, darken, opacityOver }
+
 class ShinyLogo extends StatefulWidget {
   const ShinyLogo({
     Key key,
     @required this.child,
-    @required this.parentBackground,
+    @required this.shineColor,
     this.repeatDuration = const Duration(milliseconds: 1200),
     this.shineDurationPercent = 0.5,
-    this.opacityOffset = 0.5,
+    this.shininess = 0.5,
     this.bandSizePercent = 0.3,
-    this.reversed = false,
+    this.mode = ShineMode.lighten,
   })  : assert(child != null),
-        assert(opacityOffset > 0 && opacityOffset <= 1),
-        assert(shineDurationPercent > 0 && shineDurationPercent < 1),
-        assert(bandSizePercent > 0 && bandSizePercent < 1),
+        assert(shineColor != null),
+        assert(shininess >= 0 && shininess <= 1),
+        assert(shineDurationPercent >= 0 && shineDurationPercent <= 1),
+        assert(bandSizePercent >= 0 && bandSizePercent <= 1),
         super(key: key);
 
   final Widget child;
-  final Color parentBackground;
-  final double opacityOffset;
+
+  /// The shine color of the ShinyLogo,  must be parent widget's backgroundColor
+  /// when [mode] is [ShineMode.opacityOver]
+  final Color shineColor;
+
+  /// when [shineColor] is lighter than parent widget's background color, 
+  /// use [ShineMode.lighten]
+  /// when [shineColor] is darker than parent widget's background color, 
+  /// use [ShineMode.darken]
+  /// when use [ShineMode.opacityOver], [shineColor] must be parent widget's
+  /// backgroundColor to work
+  final ShineMode mode;
+  final double shininess;
   final Duration repeatDuration;
   final double shineDurationPercent;
   final double bandSizePercent;
-  final bool reversed;
 
   @override
   _ShinyLogoState createState() => _ShinyLogoState();
@@ -32,20 +45,20 @@ class _ShinyLogoState extends State<ShinyLogo>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animatable<double> _stopTween;
-  Color _beginColor;
-  Color _endColor;
+  Color _edgeColor;
+  Color _midColor;
 
   void _initValues() {
-    if (widget.reversed) {
-      _beginColor = widget.parentBackground.withOpacity(widget.opacityOffset);
-      _endColor = widget.parentBackground.withOpacity(0.0);
+    if (widget.mode == ShineMode.opacityOver) {
+      _edgeColor = widget.shineColor.withOpacity(widget.shininess);
+      _midColor = widget.shineColor.withOpacity(0.0);
     } else {
-      _beginColor = widget.parentBackground.withOpacity(0.0);
-      _endColor = widget.parentBackground.withOpacity(widget.opacityOffset);
+      _edgeColor = widget.shineColor.withOpacity(0.0);
+      _midColor = widget.shineColor.withOpacity(widget.shininess);
     }
 
-    double beginStop = (1.0 - widget.shineDurationPercent) / 2;
-    _stopTween = CurveTween(curve: Interval(beginStop, 1.0 - beginStop));
+    double edgeStop = (1.0 - widget.shineDurationPercent) / 2;
+    _stopTween = CurveTween(curve: Interval(edgeStop, 1.0 - edgeStop));
   }
 
   @override
@@ -80,14 +93,25 @@ class _ShinyLogoState extends State<ShinyLogo>
     super.dispose();
   }
 
+  BlendMode _getBlendMode(ShineMode mode) {
+    switch (mode) {
+      case ShineMode.opacityOver:
+        return BlendMode.srcOver;
+      case ShineMode.darken:
+        return BlendMode.darken;
+      default:
+        return BlendMode.lighten;
+    }
+  }
+
   Widget _buildAnimation(BuildContext context, Widget child) {
     double scale = 1.0 + widget.bandSizePercent * 2.0;
     double value =
         _stopTween.evaluate(_controller) * scale - widget.bandSizePercent;
+
     return DecoratedBox(
         decoration: BoxDecoration(
-            backgroundBlendMode:
-                widget.reversed ? BlendMode.srcOver : BlendMode.lighten,
+            backgroundBlendMode: _getBlendMode(widget.mode),
             shape: BoxShape.rectangle,
             gradient: LinearGradient(
                 begin: Alignment.centerLeft,
@@ -99,9 +123,9 @@ class _ShinyLogoState extends State<ShinyLogo>
                   value + widget.bandSizePercent
                 ],
                 colors: [
-                  _beginColor,
-                  _endColor,
-                  _beginColor
+                  _edgeColor,
+                  _midColor,
+                  _edgeColor
                 ])),
         position: DecorationPosition.foreground,
         child: child);

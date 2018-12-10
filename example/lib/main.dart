@@ -13,9 +13,7 @@ void main() {
   Logger.root.level = Level.ALL;
   runApp(AppLifecycle(
       keepAliveDurationInBackground: const Duration(seconds: 30),
-      onInit: () {
-        log.info('App Init');
-      },
+      onInit: () => log.info('App Init'),
       onClose: () => print('App Exit'),
       onBecameBackground: () => log.info('App went into background'),
       onBecameForeground: () => log.info('App is brought back to foreground'),
@@ -34,9 +32,9 @@ class ExampleApp extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             leading: ShinyLogo(
-              reversed: true,
-              parentBackground: Theme.of(context).primaryColor,
-              opacityOffset: 0.25,
+              mode: ShineMode.opacityOver,
+              shineColor: Theme.of(context).primaryColor,
+              shininess: 0.3,
               shineDurationPercent: 0.15,
               bandSizePercent: 0.5,
               repeatDuration: const Duration(milliseconds: 2000),
@@ -80,8 +78,8 @@ class ExampleApp extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     ShinyLogo(
-                      reversed: true,
-                      parentBackground: backColor,
+                      mode: ShineMode.opacityOver,
+                      shineColor: backColor,
                       child: Image.asset(
                         'assets/wait_logo.png',
                         height: 32.0,
@@ -90,9 +88,21 @@ class ExampleApp extends StatelessWidget {
                     const SizedBox(
                       height: 16.0,
                     ),
-                    ShinyLogo(                      
-                      opacityOffset: 1.0,
-                      parentBackground: backColor,
+                    ShinyLogo(
+                      shininess: 1.0,
+                      shineColor: backColor,
+                      child: Image.asset(
+                        'assets/logo.png',
+                        height: 32.0,
+                      ),
+                    ),
+                                        const SizedBox(
+                      height: 16.0,
+                    ),
+                    ShinyLogo(
+                      mode: ShineMode.opacityOver,
+                      shininess: 1.0,
+                      shineColor: backColor,
                       child: Image.asset(
                         'assets/logo.png',
                         height: 32.0,
@@ -103,7 +113,7 @@ class ExampleApp extends StatelessWidget {
               ),
             ),
           ),
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton:FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
               log.info('${_counter++}');
