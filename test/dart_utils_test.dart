@@ -24,30 +24,27 @@ void main() {
   });
 
   test('Trail test', () async {
-    int counter = 0;
-    int trailCount = 3;
-    bool isDone = false;
-    StreamController<int> input = StreamController<int>();
-    var trailStream = input.stream.transform(trail(trailCount));
-    trailStream.listen((values) {
-      if (counter > trailCount) {
-        expect(values.length, trailCount);
-        expect(values[0], counter - trailCount + 1);
-      } else {
-        expect(values.length, counter);
-        expect(values[0], 1);
-      }
-      expect(values[values.length - 1], counter);
-    }).onDone(() {
-      isDone = true;
-    });
-    for (var i = 0; i < 10; i++) {
-      counter++;
-      input.add(counter);
-      await Future(() {});
-    }
-    await input.close();
-    expect(isDone, true);
+    const expectedOutput = [
+      [1],
+      [1, 2],
+      [1, 2, 3],
+      [2, 3, 4],
+      [3, 4, 5],
+      [4, 5, 6],
+    ];
+    var count = 0;
+    Stream.fromIterable(<int>[1, 2, 3, 4, 5, 6])
+        .transform(trail(3))
+        .listen(expectAsync1(
+      (result) {
+        expect(expectedOutput[count], result);
+        count++;
+      },
+      count: 6
+    ));
+
+    // code should reach here
+    await expectLater(true, true);
   });
 
   test('TimeFormatter test', () {

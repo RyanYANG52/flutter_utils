@@ -1,11 +1,20 @@
 import 'dart:async';
 
+/// Keep a trail of values from the source Stream by [trailCount].
+/// 
+/// [trailCount] is the maximum size of the trail emitted
+/// 
+///   Stream.fromIterable(<int>[1, 2, 3, 4, 5, 6])
+///     .transform(trail(3))
+///     .listen(print); 
+///   //prints [1], [1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5] done!
+/// 
 StreamTransformer<T, List<T>> trail<T>(int trailCount) => _Trail(trailCount);
 
 class _Trail<T> extends StreamTransformerBase<T, List<T>> {
-  final int _trailCount;
+  final int trailCount;
 
-  _Trail(this._trailCount) : assert(_trailCount > 0);
+  _Trail(this.trailCount) : assert(trailCount > 0);
 
   @override
   Stream<List<T>> bind(Stream<T> values) {
@@ -22,7 +31,7 @@ class _Trail<T> extends StreamTransformerBase<T, List<T>> {
 
     void onValue(T value) {
       (trailResults ??= <T>[]).add(value);
-      if (trailResults.length > _trailCount) {
+      if (trailResults.length > trailCount) {
         trailResults.removeAt(0);
       }
       emit();
