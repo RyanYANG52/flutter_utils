@@ -43,7 +43,7 @@ class _AppLifecycleState extends State<AppLifecycle>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if ((state == AppLifecycleState.paused ||
-            state == AppLifecycleState.suspending) &&
+            state == AppLifecycleState.detached) &&
         !_isBackground) {
       _isBackground = true;
       if (widget.onBecameBackground != null) {

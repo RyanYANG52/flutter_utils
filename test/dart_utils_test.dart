@@ -23,29 +23,29 @@ void main() {
     expect(int64, -5780841806490601592);
   });
 
-  test('Trail test', () async {
-    const expectedOutput = [
-      [1],
-      [1, 2],
-      [1, 2, 3],
-      [2, 3, 4],
-      [3, 4, 5],
-      [4, 5, 6],
-    ];
-    var count = 0;
-    Stream.fromIterable(<int>[1, 2, 3, 4, 5, 6])
-        .transform(trail(3))
-        .listen(expectAsync1(
-      (result) {
-        expect(expectedOutput[count], result);
-        count++;
-      },
-      count: 6
-    ));
+  // test('Trail test', () async {
+  //   const expectedOutput = [
+  //     [1],
+  //     [1, 2],
+  //     [1, 2, 3],
+  //     [2, 3, 4],
+  //     [3, 4, 5],
+  //     [4, 5, 6],
+  //   ];
+  //   var count = 0;
+  //   Stream.fromIterable(<int>[1, 2, 3, 4, 5, 6])
+  //       .transform(trail(3))
+  //       .listen(expectAsync1(
+  //     (result) {
+  //       expect(expectedOutput[count], result);
+  //       count++;
+  //     },
+  //     count: 6
+  //   ));
 
-    // code should reach here
-    await expectLater(true, true);
-  });
+  //   // code should reach here
+  //   await expectLater(true, true);
+  // });
 
   test('TimeFormatter test', () {
     DateTime dateTime = DateTime.utc(2000, 10, 10, 3, 59, 9, 90);
