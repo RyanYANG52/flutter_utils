@@ -6,8 +6,8 @@ import 'package:logging/logging.dart';
 
 int _counter = 0;
 var log = Logger('log');
-var logStream = log.onRecord.map((log) =>
-    '${TimeFormatter.formatDateTime(log.time, true)} - ${log.message}');
+var logStream = log.onRecord.map(
+    (log) => '${log.time.format(showMilliSeconds: true)} - ${log.message}');
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -50,10 +50,10 @@ class ExampleApp extends StatelessWidget {
                   builder: (context, AsyncSnapshot<DisplayMetrics> snapshot) {
                     String title = '';
                     if (snapshot.hasData) {
-                      double width =
-                          snapshot.data.widthInCm.roundAsFixed(fractionDigits: 1);
-                      double height =
-                          snapshot.data.heightInCm.roundAsFixed(fractionDigits: 1);
+                      double width = snapshot.data.widthInCm
+                          .roundAsFixed(fractionDigits: 1);
+                      double height = snapshot.data.heightInCm
+                          .roundAsFixed(fractionDigits: 1);
                       title = '${width}cm * ${height}cm';
                     }
                     return Text(title);
@@ -96,7 +96,7 @@ class ExampleApp extends StatelessWidget {
                         height: 32.0,
                       ),
                     ),
-                                        const SizedBox(
+                    const SizedBox(
                       height: 16.0,
                     ),
                     ShinyLogo(
@@ -113,7 +113,7 @@ class ExampleApp extends StatelessWidget {
               ),
             ),
           ),
-          floatingActionButton:FloatingActionButton(
+          floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
               log.info('${_counter++}');

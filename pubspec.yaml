@@ -2,7 +2,7 @@ name: flutter_utils
 description: A new Flutter package project.
 author: Ryan YANG
 homepage: https://github.com/RyanYANG52/flutter_utils
-version: 0.0.1
+version: 0.0.2
 
 environment:
   sdk: ">=2.6.0 <3.0.0"

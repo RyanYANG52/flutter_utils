@@ -1,16 +1,19 @@
-class TimeFormatter {
-  static String twoDigits(int n) {
+extension NumberFormatter on num {
+  String get twoDigits {
+    int n = this ?? 0;
     if (n >= 10) return "$n";
     return "0$n";
   }
 
-  static String threeDigits(int n) {
+  String get threeDigits {
+    int n = this ?? 0;
     if (n >= 100) return "$n";
     if (n >= 10) return "0$n";
     return "00$n";
   }
 
-  static String fourDigits(int n) {
+  String get fourDigits {
+    int n = this ?? 0;
     int absN = n.abs();
     String sign = n < 0 ? "-" : "";
     if (absN >= 1000) return "$n";
@@ -19,46 +22,52 @@ class TimeFormatter {
     return "${sign}000$absN";
   }
 
-  static String sixDigits(int n) {
+  String get sixDigits {
+    int n = this ?? 0;
     assert(n < -9999 || n > 9999);
     int absN = n.abs();
     String sign = n < 0 ? "-" : "+";
     if (absN >= 100000) return "$sign$absN";
     return "${sign}0$absN";
   }
+}
 
-  static String formatDuration(Duration duration,
-      [bool showMilliSeconds = false]) {
+extension DurationFormatter on Duration {
+  String format({bool showMilliSeconds = false}) {
+    Duration duration = this ?? Duration.zero;
     StringBuffer buffer = StringBuffer();
     buffer
-      ..write(twoDigits(duration.inHours))
+      ..write(duration.inHours.twoDigits)
       ..write(':')
-      ..write(twoDigits(duration.inMinutes.remainder(Duration.minutesPerHour)))
+      ..write(duration.inMinutes.remainder(Duration.minutesPerHour).twoDigits)
       ..write(':')
       ..write(
-          twoDigits(duration.inSeconds.remainder(Duration.secondsPerMinute)));
+          duration.inSeconds.remainder(Duration.secondsPerMinute).twoDigits);
 
     if (showMilliSeconds) {
       buffer
         ..write('.')
-        ..write(threeDigits(
-            duration.inMilliseconds.remainder(Duration.millisecondsPerSecond)));
+        ..write(duration.inMilliseconds
+            .remainder(Duration.millisecondsPerSecond)
+            .threeDigits);
     }
     return buffer.toString();
   }
+}
 
-  static String formatDateTime(DateTime dateTime,
-      [bool showMilliSeconds = false]) {
+extension DateTimeFormatter on DateTime {
+  String format({bool showMilliSeconds = false}) {
+    DateTime dateTime = this ?? DateTime(0);
     StringBuffer buffer = StringBuffer();
     buffer
-      ..write(twoDigits(dateTime.hour))
+      ..write(dateTime.hour.twoDigits)
       ..write(':')
-      ..write(twoDigits(dateTime.minute))
+      ..write(dateTime.minute.twoDigits)
       ..write(':')
-      ..write(twoDigits(dateTime.second));
+      ..write(dateTime.second.twoDigits);
 
     if (showMilliSeconds) {
-      buffer..write('.')..write(threeDigits(dateTime.millisecond));
+      buffer..write('.')..write(dateTime.millisecond.threeDigits);
     }
     return buffer.toString();
   }
