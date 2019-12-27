@@ -1,19 +1,19 @@
 extension NumberFormatter on num {
   String get twoDigits {
-    int n = this ?? 0;
+    int n = this?.round() ?? 0;
     if (n >= 10) return "$n";
     return "0$n";
   }
 
   String get threeDigits {
-    int n = this ?? 0;
+    int n = this?.round() ?? 0;
     if (n >= 100) return "$n";
     if (n >= 10) return "0$n";
     return "00$n";
   }
 
   String get fourDigits {
-    int n = this ?? 0;
+    int n = this?.round() ?? 0;
     int absN = n.abs();
     String sign = n < 0 ? "-" : "";
     if (absN >= 1000) return "$n";
@@ -23,7 +23,7 @@ extension NumberFormatter on num {
   }
 
   String get sixDigits {
-    int n = this ?? 0;
+    int n = this?.round() ?? 0;
     assert(n < -9999 || n > 9999);
     int absN = n.abs();
     String sign = n < 0 ? "-" : "+";

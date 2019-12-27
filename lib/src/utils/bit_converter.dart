@@ -7,7 +7,7 @@ const int maxSignedInt32 = 0x7FFFFFFF;
 const int maxUnsignedInt64 = 0xFFFFFFFFFFFFFFFF;
 const int maxSignedInt64 = 0x7FFFFFFFFFFFFFFF;
 
-extension BitConverter on List<int> {
+extension BytesConverter on List<int> {
   int readUint(int startIndex, [int byteLength = 4, bool isBigEndian = true]) {
     int value;
     if (isBigEndian) {
@@ -31,25 +31,16 @@ extension BitConverter on List<int> {
 
   int readInt16(int startIndex, [bool isBigEndian = true]) {
     int value = this.readUint(startIndex, 2, isBigEndian);
-    if (value > maxSignedInt16) {
-      value = value - maxUnsignedInt16 - 1;
-    }
-    return value;
+    return value.toSigned(16);
   }
 
   int readInt32(int startIndex, [bool isBigEndian = true]) {
     int value = this.readUint(startIndex, 4, isBigEndian);
-    if (value > maxSignedInt32) {
-      value = value - maxUnsignedInt32 - 1;
-    }
-    return value;
+    return value.toSigned(32);
   }
 
   int readInt64(int startIndex, [bool isBigEndian = true]) {
     int value = this.readUint(startIndex, 8, isBigEndian);
-    if (value > maxSignedInt64) {
-      value = value - maxUnsignedInt64 - 1;
-    }
-    return value;
+    return value.toSigned(64);
   }
 }
