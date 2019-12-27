@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:flutter/widgets.dart';
 
 class DoubleBackExit extends StatefulWidget {
   final Widget child;
   final VoidCallback backOnceCallback;
-  final VoidCallback exitCallback;
+  final FutureOr<void> Function() exitCallback;
   final Duration interval;
 
   const DoubleBackExit({
@@ -24,21 +25,24 @@ class _DoubleBackExitState extends State<DoubleBackExit> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
+      onWillPop: () async {
         if (_isBackOnce) {
           if (widget.exitCallback != null) {
-            widget.exitCallback();
+            final result = widget.exitCallback();
+            if (result is Future) {
+              await result;
+            }
           }
-          return Future.value(true);
+          return true;
         }
         _isBackOnce = true;
-        Future.delayed(widget.interval).then((_) {
+        Future<dynamic>.delayed(widget.interval).then((dynamic _) {
           _isBackOnce = false;
         });
         if (widget.backOnceCallback != null) {
           widget.backOnceCallback();
         }
-        return Future.value(false);
+        return false;
       },
       child: widget.child,
     );

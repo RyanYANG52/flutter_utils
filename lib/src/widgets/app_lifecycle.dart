@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 
 class AppLifecycle extends StatefulWidget {
   final VoidCallback onInit;
-  final VoidCallback onClose;
+  final FutureOr<void> Function() onClose;
   final VoidCallback onBecameForeground;
   final VoidCallback onBecameBackground;
   final Widget app;
@@ -41,7 +41,7 @@ class _AppLifecycleState extends State<AppLifecycle>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state){
     if ((state == AppLifecycleState.paused ||
             state == AppLifecycleState.detached) &&
         !_isBackground) {
@@ -50,8 +50,8 @@ class _AppLifecycleState extends State<AppLifecycle>
         widget.onBecameBackground();
       }
       if (widget.keepAliveDurationInBackground != null) {
-        _closeTimer = Timer(widget.keepAliveDurationInBackground, () {
-          _closeApp();
+        _closeTimer = Timer(widget.keepAliveDurationInBackground, () async {
+          await _closeApp();
           SystemNavigator.pop();
         });
       }
@@ -67,17 +67,20 @@ class _AppLifecycleState extends State<AppLifecycle>
   }
 
   @override
-  void dispose() {
-    _closeApp();
+  void dispose() async{
+    await _closeApp();
     super.dispose();
   }
 
-  void _closeApp() {
+  Future _closeApp() async{
     if (!_isClosed) {
       _closeTimer?.cancel();
       WidgetsBinding.instance.removeObserver(this);
       if (widget.onClose != null) {
-        widget.onClose();
+        final result = widget.onClose();
+        if(result is Future){
+          await result;
+        }        
       }
       _isClosed = true;
     }

@@ -51,9 +51,9 @@ class ExampleApp extends StatelessWidget {
                     String title = '';
                     if (snapshot.hasData) {
                       double width =
-                          NumUtil.roundAsFixed(snapshot.data.widthInCm, 1);
+                          snapshot.data.widthInCm.roundAsFixed(fractionDigits: 1);
                       double height =
-                          NumUtil.roundAsFixed(snapshot.data.heightInCm, 1);
+                          snapshot.data.heightInCm.roundAsFixed(fractionDigits: 1);
                       title = '${width}cm * ${height}cm';
                     }
                     return Text(title);
