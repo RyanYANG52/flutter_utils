@@ -9,6 +9,7 @@ class AppLifecycle extends StatefulWidget {
   final VoidCallback onBecameForeground;
   final VoidCallback onBecameBackground;
   final Widget app;
+  final bool Function() isAlwaysKeepAlive;
   final Duration keepAliveDurationInBackground;
 
   const AppLifecycle({
@@ -18,6 +19,7 @@ class AppLifecycle extends StatefulWidget {
     this.onClose,
     this.onBecameBackground,
     this.onBecameForeground,
+    this.isAlwaysKeepAlive,
     this.keepAliveDurationInBackground,
   }) : super(key: key);
 
@@ -49,7 +51,8 @@ class _AppLifecycleState extends State<AppLifecycle>
       if (widget.onBecameBackground != null) {
         widget.onBecameBackground();
       }
-      if (widget.keepAliveDurationInBackground != null) {
+      if (widget.keepAliveDurationInBackground != null &&
+          (widget?.isAlwaysKeepAlive() != true)) {
         _closeTimer = Timer(widget.keepAliveDurationInBackground, () async {
           await _closeApp();
           SystemNavigator.pop();
